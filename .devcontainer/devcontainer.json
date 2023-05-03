@@ -1,0 +1,16 @@
+{
+    "name": "Node.js & Neo4j DevContainer",
+    "dockerComposeFile": "docker-compose.yml",
+    "service": "app",
+    "workspaceFolder": "/app",
+    "forwardPorts": [3000],
+    "postCreateCommand": "apt-get update && apt-get install -y git",
+    "settings": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.formatOnSave": true
+    },
+    "extensions": [
+      "esbenp.prettier-vscode",
+      "dbaeumer.vscode-eslint"
+    ]
+  }

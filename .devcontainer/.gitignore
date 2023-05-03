@@ -1,0 +1,6 @@
+neo4j/data/*
+neo4j/import/*
+neo4j/logs/*
+!neo4j/data/.gitkeep
+!neo4j/import/.gitkeep
+!neo4j/logs/.gitkeep
