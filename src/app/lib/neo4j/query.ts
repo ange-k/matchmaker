@@ -50,7 +50,7 @@ export const createNode = async (
   const session = driver.session();
 
   try {
-    await session.run(query, { name: lang });
+    await session.run(query, { name: lang.toLowerCase() });
   } catch (e) {
     console.error(e);
     throw e;
@@ -62,13 +62,13 @@ export const createNode = async (
 const weight = (type: RelationType) => {
   switch (type) {
     case RelationTypeValue.Subset:
-      return "10.0";
+      return "50.0";
     case RelationTypeValue.Influenced:
       return "1.0";
     case RelationTypeValue.FrameWork:
-      return "10.0";
+      return "100.0";
     case RelationTypeValue.Paradigm:
-      return "2.0";
+      return "5.0";
   }
 };
 
@@ -97,7 +97,32 @@ export const relation = async (
   const session = driver.session();
 
   try {
-    await session.run(query, { node1name: node1name, node2name: node2name });
+    await session.run(query, {
+      node1name: node1name.toLowerCase(),
+      node2name: node2name.toLowerCase(),
+    });
+  } catch (e) {
+    console.error(e);
+    throw e;
+  } finally {
+    await session.close();
+  }
+};
+
+/**
+ * リレーションが作成されていないノードの検索
+ * @returns languages
+ */
+export const findNonRelationNode = async (): Promise<Array<string>> => {
+  const query = `
+  MATCH (l:Language)
+  WHERE NOT (l)-[:SUPPORTS_PARADIGM]-()
+  RETURN l.name as name
+  `;
+  const session = driver.session();
+  try {
+    const res = await session.run(query);
+    return res.records.map((record) => record.get("name"));
   } catch (e) {
     console.error(e);
     throw e;

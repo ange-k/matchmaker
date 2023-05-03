@@ -17,7 +17,7 @@ export type RelationType =
 
 export type LanguageOpenAiResponse = {
   paradigm: Array<string>;
-  majorImplementations: Array<string>;
+  majorDialects: Array<string>;
   influencedBy: Array<string>;
   influenced: Array<string>;
   majorFrameworks: Array<string>;

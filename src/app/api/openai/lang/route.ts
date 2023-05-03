@@ -11,6 +11,8 @@ const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
 });
 const openai = new OpenAIApi(configuration);
+const gpt = "gpt-3.5-turbo";
+//const gpt = "gpt-4";
 
 const generatePrompt = (lang: string) => `
 Based on the information on wikipedia, please answer about the programming languages I have heard.
@@ -21,9 +23,9 @@ If you have something you would like to explain, please include it in the NOTE i
 \`\`\`
 {
   "paradigm": [],
-  "majorImplementations": [],
-  "influencedBy": [],
-  "influenced": [],
+  "majorDialects": [],
+  "strongInfluencedBy": [],
+  "strongInfluenced": [],
   "majorFrameworks":[],
   "note": ""
 }
@@ -50,7 +52,7 @@ export async function POST(request: Request) {
 
   try {
     const completion = await openai.createChatCompletion({
-      model: "gpt-3.5-turbo",
+      model: gpt,
       messages: [{ role: "user", content: generatePrompt(lang) }],
     });
 
@@ -110,7 +112,7 @@ export async function POST(request: Request) {
       );
     });
     // 方言について
-    response.majorImplementations.forEach(async (impl: string) => {
+    response.majorDialects.forEach(async (impl: string) => {
       await createNode(impl, NodeTypeValue.Impl);
       await relation(
         NodeTypeValue.Lang,
