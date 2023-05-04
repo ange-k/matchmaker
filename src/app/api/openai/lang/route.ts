@@ -5,7 +5,11 @@ import {
   NodeTypeValue,
   RelationTypeValue,
 } from "../types";
-import { createNode, relation } from "@/app/lib/neo4j/query";
+import {
+  createNode,
+  findNonRelationNode,
+  relation,
+} from "@/app/lib/neo4j/query";
 
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
@@ -68,7 +72,7 @@ export async function POST(request: Request) {
     // openaiの回答をneo4jに記録する
     await createNode(lang, NodeTypeValue.Lang);
     // 影響を与えた言語について
-    response.influenced.forEach(async (influence: string) => {
+    response.strongInfluenced.forEach(async (influence: string) => {
       await createNode(influence, NodeTypeValue.Lang);
       await relation(
         NodeTypeValue.Lang,
@@ -79,7 +83,7 @@ export async function POST(request: Request) {
       );
     });
     // 影響を受けた言語について
-    response.influencedBy.forEach(async (influence: string) => {
+    response.strongInfluencedBy.forEach(async (influence: string) => {
       await createNode(influence, NodeTypeValue.Lang);
       await relation(
         NodeTypeValue.Lang,
@@ -91,12 +95,13 @@ export async function POST(request: Request) {
     });
     // パラダイムについて
     response.paradigm.forEach(async (paradigm: string) => {
-      await createNode(paradigm, NodeTypeValue.Paradigm);
+      const cleanStr = paradigm.replace(" programming", "");
+      await createNode(cleanStr, NodeTypeValue.Paradigm);
       await relation(
         NodeTypeValue.Lang,
         lang,
         NodeTypeValue.Paradigm,
-        paradigm,
+        cleanStr,
         RelationTypeValue.Paradigm
       );
     });
@@ -132,6 +137,18 @@ export async function POST(request: Request) {
       });
     }
     return new Response("Unknown", {
+      status: 500,
+    });
+  }
+}
+
+export async function GET(request: Request) {
+  try {
+    const result = await findNonRelationNode();
+    return new NextResponse(JSON.stringify(result));
+  } catch (e) {
+    console.error(e);
+    return new Response("error", {
       status: 500,
     });
   }

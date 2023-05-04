@@ -62,13 +62,13 @@ export const createNode = async (
 const weight = (type: RelationType) => {
   switch (type) {
     case RelationTypeValue.Subset:
-      return "50.0";
+      return "20.0";
     case RelationTypeValue.Influenced:
-      return "1.0";
+      return "3.0";
     case RelationTypeValue.FrameWork:
       return "100.0";
     case RelationTypeValue.Paradigm:
-      return "5.0";
+      return "2.0";
   }
 };
 
